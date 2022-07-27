@@ -5,7 +5,7 @@ from django.urls import reverse
 
 # создание моделей
 class MessageRequest(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     # наименование заявки
     title = models.CharField(max_length=150, verbose_name='Тема заявки')
     # Описание проблемы для СП
