@@ -3,22 +3,20 @@ from django.db import models
 from django.urls import reverse
 
 
-# создание моделей
 class MessageRequest(models.Model):
+    # создание модели тикета
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    # наименование заявки
+    user_email = models.EmailField(max_length=254, verbose_name='Электронная почта')
     title = models.CharField(max_length=150, verbose_name='Тема заявки')
-    # Описание проблемы для СП
     content = models.TextField(blank=True, verbose_name='Описание проблемы')
-    # Дата публикации заявки
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')
     STATE_MESSAGE = [
-        ('R', 'Выполняется'),
-        ('S', 'Отложена'),
-        ('F', 'Завершена'),
+        ('Act', 'Выполняется'),
+        ('Stp', 'Отложена'),
+        ('Cmp', 'Завершена'),
     ]
     # состояние заявки
-    state = models.CharField(max_length=1, choices=STATE_MESSAGE, default='R', verbose_name='Состояние заявки')
+    state = models.CharField(max_length=3, choices=STATE_MESSAGE, default='R', verbose_name='Состояние заявки')
 
     def get_absolute_url(self):
         return reverse('view_request', kwargs={'pk': self.pk})
@@ -29,27 +27,25 @@ class MessageRequest(models.Model):
 
     # мета класс для переименонвания модели в админ панели
     class Meta:
-        verbose_name = 'Заявка'
-        verbose_name_plural = 'Заявки'
+        verbose_name = 'Тикет'
+        verbose_name_plural = 'Тикеты'
         ordering = ['-created_at']
 
 
-# модель комментарий
+# модель комментариq, при помощи которой сапорт может ответить на тикет пользователя
 class Comment(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.PROTECT)
-    message_req = models.ForeignKey(MessageRequest, on_delete=models.PROTECT, verbose_name='Заявка', null=True)
-    # ответ специалиста или же дополнение проблемы от пользователя
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     content = models.TextField(blank=True, verbose_name='Контент')
-    # Дата пуликакции
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')
-
-    def get_absolute_url(self):
-        return reverse('comment', kwargs={'pk': self.pk})
+    message_req = models.ForeignKey(
+        MessageRequest, on_delete=models.CASCADE,
+        verbose_name='Заявка', related_name="comment",
+    )
 
     def __str__(self):
-        return self.content
+        return f'{self.user}'
 
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
-        ordering = ['-created_at']
+        ordering = ['created_at']
