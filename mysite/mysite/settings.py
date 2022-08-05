@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'djoser',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    'django_celery_results',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -144,6 +146,18 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 }
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:16379/0'
+CELERY_RESULT_BACKEND = 'django-db'
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "127.0.0.1:16379/1",
+    },
+}
+
+CELERY_CACHE_BACKEND = 'default'
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),

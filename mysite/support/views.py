@@ -32,7 +32,6 @@ class MessageCreateViewSet(
 ):
     serializer_class = MessageCreateSerializer
     permission_classes = (IsAuthenticated, )
-    
 
 
 # предсьтавление для создания комментарий к тикету
